@@ -15,8 +15,22 @@ st.markdown("""
 <style>
 
 .stApp {
-    background: linear-gradient(to bottom right, #0f172a, #1e293b, #312e81);
+    background-image: url("https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1974&auto=format&fit=crop");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: white;
+}
+
+.stApp::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: -1;
 }
 
 .main-title {
@@ -24,60 +38,44 @@ st.markdown("""
     font-size: 50px;
     font-weight: bold;
     color: #facc15;
-    margin-bottom: 10px;
     text-shadow: 2px 2px 10px black;
 }
 
 .subtitle {
     text-align: center;
+    color: #e5e7eb;
     font-size: 18px;
-    color: #d1d5db;
     margin-bottom: 30px;
 }
 
 .anime-box {
-    background-color: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
     padding: 15px;
-    border-radius: 15px;
-    margin-bottom: 15px;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0px 0px 10px rgba(255,255,255,0.1);
-}
-
-.recommend-title {
-    color: #f472b6;
-    font-size: 28px;
-    font-weight: bold;
-    margin-top: 20px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 0px 15px rgba(255,255,255,0.1);
 }
 
 .stButton>button {
+    width: 100%;
     background: linear-gradient(to right, #ec4899, #8b5cf6);
     color: white;
-    border-radius: 12px;
     border: none;
-    padding: 12px 25px;
+    border-radius: 12px;
+    padding: 12px;
     font-size: 18px;
     font-weight: bold;
-    width: 100%;
-    transition: 0.3s;
 }
 
 .stButton>button:hover {
-    transform: scale(1.03);
-    background: linear-gradient(to right, #f43f5e, #7c3aed);
-}
-
-div[data-baseweb="select"] {
-    background-color: white;
-    border-radius: 10px;
+    transform: scale(1.02);
 }
 
 .footer {
     text-align: center;
     margin-top: 40px;
-    color: #cbd5e1;
-    font-size: 14px;
+    color: #d1d5db;
 }
 
 </style>
@@ -90,21 +88,43 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">Discover your next favorite anime ✨</div>',
+    '<div class="subtitle">Find your next favorite anime ✨</div>',
     unsafe_allow_html=True
+)
+
+# SIDEBAR
+st.sidebar.title("📌 About Project")
+
+st.sidebar.info(
+    """
+    This Anime Recommendation System uses:
+    
+    ✅ Content-Based Filtering  
+    ✅ Cosine Similarity  
+    ✅ Streamlit UI  
+    ✅ Kaggle Anime Dataset
+    """
+)
+
+# SLIDER
+num_recommendations = st.sidebar.slider(
+    "Number of Recommendations",
+    1,
+    10,
+    5
 )
 
 # LOAD DATASET
 data = pd.read_csv("small_anime.csv", engine='python')
 
-# REMOVE NULL VALUES
 data = data.dropna()
 
 # COMBINE FEATURES
 data["features"] = data["genre"] + " " + data["type"]
 
-# TEXT TO VECTOR
+# VECTORIZE
 cv = CountVectorizer(stop_words='english')
+
 matrix = cv.fit_transform(data["features"])
 
 # SIMILARITY
@@ -113,11 +133,28 @@ similarity = cosine_similarity(matrix)
 # ANIME LIST
 anime_list = data["name"].values
 
+# POSTER URLs
+poster_dict = {
+    "Naruto": "https://cdn.myanimelist.net/images/anime/13/17405.jpg",
+    "One Piece": "https://cdn.myanimelist.net/images/anime/6/73245.jpg",
+    "Death Note": "https://cdn.myanimelist.net/images/anime/9/9453.jpg",
+    "Attack on Titan": "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
+    "Demon Slayer": "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",
+    "Jujutsu Kaisen": "https://cdn.myanimelist.net/images/anime/1171/109222.jpg"
+}
+
 # SELECT BOX
 selected_anime = st.selectbox(
-    "🎥 Select Your Favorite Anime",
+    "🎥 Select Anime",
     anime_list
 )
+
+# SHOW POSTER
+if selected_anime in poster_dict:
+    st.image(
+        poster_dict[selected_anime],
+        width=250
+    )
 
 # RECOMMEND FUNCTION
 def recommend(anime):
@@ -134,7 +171,7 @@ def recommend(anime):
 
     recommendations = []
 
-    for i in sorted_distances[1:6]:
+    for i in sorted_distances[1:num_recommendations+1]:
 
         recommendations.append(
             data.iloc[i[0]]
@@ -147,10 +184,7 @@ if st.button("✨ Recommend Anime"):
 
     recommendations = recommend(selected_anime)
 
-    st.markdown(
-        '<div class="recommend-title">🔥 Recommended Anime</div>',
-        unsafe_allow_html=True
-    )
+    st.subheader("🔥 Recommended Anime")
 
     for anime in recommendations:
 
