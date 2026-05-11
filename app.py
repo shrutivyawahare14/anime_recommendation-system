@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+import random
+import time
+
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -43,15 +46,15 @@ st.markdown("""
 
 .subtitle {
     text-align: center;
-    color: #e5e7eb;
     font-size: 18px;
+    color: #e5e7eb;
     margin-bottom: 30px;
 }
 
 .anime-box {
     background: rgba(255,255,255,0.12);
     backdrop-filter: blur(10px);
-    padding: 15px;
+    padding: 20px;
     border-radius: 20px;
     margin-bottom: 20px;
     box-shadow: 0px 0px 15px rgba(255,255,255,0.1);
@@ -88,7 +91,7 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">Find your next favorite anime ✨</div>',
+    '<div class="subtitle">Discover your next favorite anime ✨</div>',
     unsafe_allow_html=True
 )
 
@@ -97,14 +100,36 @@ st.sidebar.title("📌 About Project")
 
 st.sidebar.info(
     """
-    This Anime Recommendation System uses:
-    
+    This system uses:
+
     ✅ Content-Based Filtering  
     ✅ Cosine Similarity  
     ✅ Streamlit UI  
-    ✅ Kaggle Anime Dataset
+    ✅ Kaggle Dataset
     """
 )
+
+# TRENDING SECTION
+st.sidebar.title("🔥 Trending Anime")
+
+st.sidebar.write("""
+⭐ Attack on Titan  
+⭐ Demon Slayer  
+⭐ Jujutsu Kaisen  
+⭐ One Piece  
+⭐ Naruto
+""")
+
+# GENRE SECTION
+st.sidebar.title("🎭 Popular Genres")
+
+st.sidebar.write("""
+⚔ Action  
+💕 Romance  
+😂 Comedy  
+🌌 Fantasy  
+👻 Horror
+""")
 
 # SLIDER
 num_recommendations = st.sidebar.slider(
@@ -114,12 +139,30 @@ num_recommendations = st.sidebar.slider(
     5
 )
 
-# LOAD DATASET
-data = pd.read_csv("small_anime.csv", engine='python')
+# RANDOM QUOTES
+quotes = [
+    "Power comes in response to a need.",
+    "Fear is not evil. It tells you your weakness.",
+    "A lesson without pain is meaningless.",
+    "People’s lives don’t end when they die.",
+    "Whatever you lose, you'll find it again."
+]
+
+st.info("✨ Anime Quote: " + random.choice(quotes))
+
+# LOAD DATA
+@st.cache_data
+def load_data():
+    return pd.read_csv(
+        "small_anime.csv",
+        engine='python'
+    )
+
+data = load_data()
 
 data = data.dropna()
 
-# COMBINE FEATURES
+# FEATURES
 data["features"] = data["genre"] + " " + data["type"]
 
 # VECTORIZE
@@ -133,28 +176,91 @@ similarity = cosine_similarity(matrix)
 # ANIME LIST
 anime_list = data["name"].values
 
-# POSTER URLs
+# POSTERS
 poster_dict = {
-    "Naruto": "https://cdn.myanimelist.net/images/anime/13/17405.jpg",
-    "One Piece": "https://cdn.myanimelist.net/images/anime/6/73245.jpg",
-    "Death Note": "https://cdn.myanimelist.net/images/anime/9/9453.jpg",
-    "Attack on Titan": "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
-    "Demon Slayer": "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",
-    "Jujutsu Kaisen": "https://cdn.myanimelist.net/images/anime/1171/109222.jpg"
-}
 
+    "Naruto":
+    "https://cdn.myanimelist.net/images/anime/13/17405.jpg",
+
+    "One Piece":
+    "https://cdn.myanimelist.net/images/anime/6/73245.jpg",
+
+    "Death Note":
+    "https://cdn.myanimelist.net/images/anime/9/9453.jpg",
+
+    "Attack on Titan":
+    "https://cdn.myanimelist.net/images/anime/10/47347.jpg",
+
+    "Demon Slayer":
+    "https://cdn.myanimelist.net/images/anime/1286/99889.jpg",
+
+    "Jujutsu Kaisen":
+    "https://cdn.myanimelist.net/images/anime/1171/109222.jpg",
+
+    "Tokyo Ghoul":
+    "https://cdn.myanimelist.net/images/anime/5/64449.jpg",
+
+    "Bleach":
+    "https://cdn.myanimelist.net/images/anime/3/40451.jpg",
+
+    "Dragon Ball Z":
+    "https://cdn.myanimelist.net/images/anime/6/20936.jpg",
+
+    "Hunter x Hunter":
+    "https://cdn.myanimelist.net/images/anime/1337/99013.jpg",
+
+    "Hunter x Hunter (2011)":
+    "https://cdn.myanimelist.net/images/anime/1337/99013.jpg",
+
+    "Your Name":
+    "https://cdn.myanimelist.net/images/anime/5/87048.jpg",
+
+    "Kimi no Na wa.":
+    "https://cdn.myanimelist.net/images/anime/5/87048.jpg",
+
+    "Spirited Away":
+    "https://cdn.myanimelist.net/images/anime/6/79597.jpg",
+
+    "Haikyuu":
+    "https://cdn.myanimelist.net/images/anime/7/76014.jpg",
+
+    "Haikyuu!!: Karasuno Koukou VS Shiratorizawa Gakuen Koukou":
+    "https://cdn.myanimelist.net/images/anime/7/81919.jpg",
+
+    "Fairy Tail":
+    "https://cdn.myanimelist.net/images/anime/5/18179.jpg",
+
+    "Fullmetal Alchemist: Brotherhood":
+    "https://cdn.myanimelist.net/images/anime/1223/96541.jpg",
+
+    "Steins;Gate":
+    "https://cdn.myanimelist.net/images/anime/5/73199.jpg",
+
+    "Gintama°":
+    "https://cdn.myanimelist.net/images/anime/3/72078.jpg",
+
+    "Gintama&#039;":
+    "https://cdn.myanimelist.net/images/anime/4/50361.jpg"
+}
 # SELECT BOX
 selected_anime = st.selectbox(
     "🎥 Select Anime",
-    anime_list
+    anime_list,
+    index=None,
+    placeholder="Choose Anime"
 )
 
 # SHOW POSTER
-if selected_anime in poster_dict:
-    st.image(
-        poster_dict[selected_anime],
-        width=250
-    )
+if selected_anime:
+
+    anime_key = selected_anime.strip()
+
+    if anime_key in poster_dict:
+
+        st.image(
+            poster_dict[anime_key],
+            width=280
+        )
 
 # RECOMMEND FUNCTION
 def recommend(anime):
@@ -173,8 +279,12 @@ def recommend(anime):
 
     for i in sorted_distances[1:num_recommendations+1]:
 
+        anime_data = data.iloc[i[0]]
+
+        similarity_score = round(i[1] * 100, 2)
+
         recommendations.append(
-            data.iloc[i[0]]
+            (anime_data, similarity_score)
         )
 
     return recommendations
@@ -182,23 +292,43 @@ def recommend(anime):
 # BUTTON
 if st.button("✨ Recommend Anime"):
 
-    recommendations = recommend(selected_anime)
+    if selected_anime is None:
 
-    st.subheader("🔥 Recommended Anime")
+        st.warning("Please select an anime first!")
 
-    for anime in recommendations:
+    else:
 
-        st.markdown(f"""
-        <div class="anime-box">
-            <h3>🎬 {anime['name']}</h3>
-            <p><b>Genre:</b> {anime['genre']}</p>
-            <p><b>Type:</b> {anime['type']}</p>
-            <p><b>Rating:</b> ⭐ {anime['rating']}</p>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.spinner("Finding best anime for you..."):
+
+            time.sleep(2)
+
+            recommendations = recommend(selected_anime)
+
+        st.subheader("🔥 Recommended Anime")
+
+        for anime, score in recommendations:
+
+            anime_name = anime['name']
+
+            st.markdown(f"""
+            <div class="anime-box">
+                <h3>🎬 {anime_name}</h3>
+                <p><b>Genre:</b> {anime['genre']}</p>
+                <p><b>Type:</b> {anime['type']}</p>
+                <p><b>Rating:</b> ⭐ {anime['rating']}</p>
+                <p><b>Match:</b> 🔥 {score}%</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            if anime_name in poster_dict:
+
+                st.image(
+                    poster_dict[anime_name],
+                    width=200
+                )
 
 # FOOTER
 st.markdown(
-    '<div class="footer">Made with ❤️ using Streamlit</div>',
+    '<div class="footer">🌍 Anime Recommendation System using Machine Learning</div>',
     unsafe_allow_html=True
 )
