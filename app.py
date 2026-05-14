@@ -15,87 +15,152 @@ st.set_page_config(
 
 # CUSTOM CSS
 st.markdown("""
+
 <style>
 
+/* MAIN BACKGROUND */
 .stApp {
+            
 
-    background-image: url("https://wallpapercave.com/wp/wp5128415.jpg");
+    background:
+        linear-gradient(
+            rgba(0,0,0,0.72),
+            rgba(0,0,0,0.72)
+        ),
+        url("https://i.pinimg.com/736x/0b/0b/ab/0b0babdc7363ca598779f4456348e209.jpg");
 
     background-size: cover;
 
     background-position: center;
 
+    background-repeat: no-repeat;
+
     background-attachment: fixed;
+            
 
     color: white;
 }
 
-.stApp::before {
-
-    content: "";
-
-    position: fixed;
-
-    top: 0;
-
-    left: 0;
-
-    right: 0;
-
-    bottom: 0;
-
-    background: rgba(0,0,0,0.65);
-
-    backdrop-filter: blur(5px);
-
-    -webkit-backdrop-filter: blur(5px);
-
-    z-index: -1;
-}
-
+/* TITLE */
 .main-title {
+
     text-align: center;
-    font-size: 50px;
+
+    font-size: 52px;
+
     font-weight: bold;
+
     color: #facc15;
-    text-shadow: 2px 2px 10px black;
+
+    text-shadow: 3px 3px 15px black;
+
+    margin-top: 10px;
 }
 
+/* SUBTITLE */
 .subtitle {
+
     text-align: center;
+
     font-size: 18px;
-    color: #e5e7eb;
+
+    color: #f3f4f6;
+
     margin-bottom: 30px;
 }
 
+/* RECOMMENDATION CARD */
 .anime-box {
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(10px);
+
+    background: rgba(255,255,255,0.10);
+
+    backdrop-filter: blur(12px);
+
+    -webkit-backdrop-filter: blur(12px);
+
     padding: 20px;
-    border-radius: 20px;
+
+    border-radius: 22px;
+
     margin-bottom: 20px;
-    box-shadow: 0px 0px 15px rgba(255,255,255,0.1);
-}
 
-.stButton>button {
-    width: 100%;
-    background: linear-gradient(to right, #ec4899, #8b5cf6);
+    border: 1px solid rgba(255,255,255,0.15);
+
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+
     color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 18px;
-    font-weight: bold;
+
+    transition: 0.3s;
 }
 
-.stButton>button:hover {
+/* CARD HOVER */
+.anime-box:hover {
+
     transform: scale(1.02);
 }
 
+/* BUTTON */
+.stButton>button {
+
+    width: 100%;
+
+    background: linear-gradient(
+        to right,
+        #ec4899,
+        #8b5cf6
+    );
+
+    color: white;
+
+    border: none;
+
+    border-radius: 14px;
+
+    padding: 12px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    transition: 0.3s;
+
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* BUTTON HOVER */
+.stButton>button:hover {
+
+    transform: scale(1.03);
+}
+
+/* SIDEBAR */
+section[data-testid="stSidebar"] {
+
+    background: rgba(0,0,0,0.45);
+
+    backdrop-filter: blur(10px);
+}
+
+/* SELECT BOX */
+.stSelectbox div[data-baseweb="select"] {
+
+    background: rgba(255,255,255,0.08);
+
+    border-radius: 12px;
+
+    color: white;
+}
+
+/* FOOTER */
 .footer {
+
     text-align: center;
+
     margin-top: 40px;
+
     color: #d1d5db;
+
+    font-size: 15px;
 }
 
 </style>
